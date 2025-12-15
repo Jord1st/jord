@@ -2,58 +2,111 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Home</title>
+  <title>Mini Drive</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h2>📁 Media Storage</h2>
+<h2>☁️ My Mini Drive</h2>
 
-  <!-- UPLOAD FOTO / VIDEO -->
-  <div class="box">
-    <h3>Upload Foto / Video</h3>
-    <input type="file" id="fileInput" accept="image/*,video/*">
-    <br><br>
-    <div id="preview"></div>
-  </div>
+<!-- UPLOAD -->
+<div class="box">
+  <h3>Upload Foto</h3>
+  <input type="file" id="fileInput" accept="image/*">
+</div>
 
-  <!-- TEMPAT SIMPAN LINK -->
-  <div class="box">
-    <h3>Save Link</h3>
-    <input type="text" id="linkInput" placeholder="Masukkan link">
-    <button onclick="saveLink()">Save</button>
+<!-- FILE LIST -->
+<div class="box">
+  <h3>My Files</h3>
+  <div id="fileList"></div>
+</div>
 
-    <ul id="linkList"></ul>
-  </div>
+<!-- LINK STORAGE -->
+<div class="box">
+  <h3>Save Link</h3>
+  <input type="text" id="linkInput" placeholder="Masukkan link">
+  <button onclick="saveLink()">Save</button>
+  <ul id="linkList"></ul>
+</div>
 
-  <script>
-    // Preview foto / video
-    document.getElementById("fileInput").addEventListener("change", function () {
-      const file = this.files[0];
-      const preview = document.getElementById("preview");
-      preview.innerHTML = "";
+<script>
+  // LOAD DATA SAAT HALAMAN DIBUKA
+  window.onload = function () {
+    loadFiles();
+    loadLinks();
+  };
 
-      if (!file) return;
+  // UPLOAD FOTO & SAVE
+  document.getElementById("fileInput").addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
 
-      const url = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onload = function () {
+      let files = JSON.parse(localStorage.getItem("files")) || [];
+      files.push(reader.result);
+      localStorage.setItem("files", JSON.stringify(files));
+      loadFiles();
+    };
+    reader.readAsDataURL(file);
+  });
 
-      if (file.type.startsWith("image")) {
-        preview.innerHTML = `<img src="${url}" width="300">`;
-      } else if (file.type.startsWith("video")) {
-        preview.innerHTML = `
-          <video width="300" controls>
-            <source src="${url}">
-          </video>`;
-      }
+  function loadFiles() {
+    const fileList = document.getElementById("fileList");
+    fileList.innerHTML = "";
+
+    const files = JSON.parse(localStorage.getItem("files")) || [];
+    files.forEach((file, index) => {
+      fileList.innerHTML += `
+        <div class="file">
+          <img src="${file}">
+          <button onclick="deleteFile(${index})">Delete</button>
+        </div>
+      `;
     });
+  }
 
-    // Simpan link (sementara)
-    function saveLink() {
-      const linkInput = document.getElementById("linkInput");
-      const linkList = document.getElementById("linkList");
+  function deleteFile(index) {
+    let files = JSON.parse(localStorage.getItem("files"));
+    files.splice(index, 1);
+    localStorage.setItem("files", JSON.stringify(files));
+    loadFiles();
+  }
 
-      if (linkInput.value === "") return;
+  // SAVE LINK
+  function saveLink() {
+    const input = document.getElementById("linkInput");
+    if (input.value === "") return;
 
-      const li = document.createElement("li");
-      li.innerHTML = `<a href="${linkInput.value}" target="_blank">${linkInput.value}</a>`;
-      linkList.appendChil
+    let links = JSON.parse(localStorage.getItem("links")) || [];
+    links.push(input.value);
+    localStorage.setItem("links", JSON.stringify(links));
+    input.value = "";
+    loadLinks();
+  }
+
+  function loadLinks() {
+    const linkList = document.getElementById("linkList");
+    linkList.innerHTML = "";
+
+    const links = JSON.parse(localStorage.getItem("links")) || [];
+    links.forEach((link, index) => {
+      linkList.innerHTML += `
+        <li>
+          <a href="${link}" target="_blank">${link}</a>
+          <button onclick="deleteLink(${index})">X</button>
+        </li>
+      `;
+    });
+  }
+
+  function deleteLink(index) {
+    let links = JSON.parse(localStorage.getItem("links"));
+    links.splice(index, 1);
+    localStorage.setItem("links", JSON.stringify(links));
+    loadLinks();
+  }
+</script>
+
+</body>
+</html>
