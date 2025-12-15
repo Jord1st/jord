@@ -1,15 +1,38 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Website Pertamaku</title>
-
-    <!-- HUBUNGKAN CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Website Pertamaku</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Halo Dunia 👋</h1>
+  <h1>Halo Dunia 👋</h1>
+
+  <div class="password-box">
+    <label for="password">Input your password sir</label><br>
+    <input type="password" id="password" placeholder="Masukkan kata sandi">
+    <br>
+    <button onclick="login()">Login</button>
+
+    <p id="error"></p>
+  </div>
+
+  <script>
+    function login() {
+      const password = document.getElementById("password").value;
+      const errorText = document.getElementById("error");
+
+      if (password === "klord99") {
+        // pindah ke halaman lain
+        window.location.href = "home.html";
+      } else {
+        // tampilkan pesan error
+        errorText.textContent = "The login information you entered is incorrect";
+        errorText.style.color = "red";
+      }
+    }
+  </script>
 
 </body>
 </html>
